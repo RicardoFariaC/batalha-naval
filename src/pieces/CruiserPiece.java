@@ -8,8 +8,8 @@ public class CruiserPiece extends Piece {
         setCol(col);
         setRow(row);
         setFirstPlayer(isFirstPlayer);
-        setXCord(getCol() * board.getTileSize());
-        setYCord(getRow() * board.getTileSize());
+        setXCoord(getCol() * board.getTileSize());
+        setYCoord(getRow() * board.getTileSize());
         setPieceName("Cruiser");
         setShape(new PieceShape(new int[][]{ {1, 1} }));
     }

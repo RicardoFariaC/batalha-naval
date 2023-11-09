@@ -9,8 +9,8 @@ public class HidroPlanePiece extends Piece{
         setCol(col);
         setRow(row);
         setFirstPlayer(isFirstPlayer);
-        setXCord(col * board.getTileSize());
-        setYCord(row * board.getTileSize());
+        setXCoord(col * board.getTileSize());
+        setYCoord(row * board.getTileSize());
         setPieceName("Hidroplane");
         setShape(new PieceShape(new int[][]{ {0, 1, 0}, {1, 0, 1} }));
     }

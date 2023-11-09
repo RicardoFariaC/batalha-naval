@@ -8,8 +8,8 @@ public class BattleShipPiece extends Piece {
         setCol(col);
         setRow(row);
         setFirstPlayer(isFirstPlayer);
-        setXCord(col * board.getTileSize());
-        setYCord(row * board.getTileSize());
+        setXCoord(col * board.getTileSize());
+        setYCoord(row * board.getTileSize());
         setPieceName("Battleship");
         setShape(new PieceShape(new int[][]{ {1, 1, 1, 1} }));
     }

@@ -1,9 +1,10 @@
 package pieces;
 
+import game.Move;
 import main.GameBoard;
 
 public class Piece {
-    private int col, row, xCord, yCord;
+    private int col, row, xCoord, yCoord;
     private boolean isFirstPlayer;
     private String pieceName;
     private PieceShape shape;
@@ -25,20 +26,20 @@ public class Piece {
         this.row = row;
     }
 
-    public int getXCord() {
-        return xCord;
+    public int getXCoord() {
+        return xCoord;
     }
 
-    public void setXCord(int xCord) {
-        this.xCord = xCord;
+    public void setXCoord(int xCord) {
+        this.xCoord = xCord;
     }
 
-    public int getYCord() {
-        return yCord;
+    public int getYCoord() {
+        return yCoord;
     }
 
-    public void setYCord(int yCord) {
-        this.yCord = yCord;
+    public void setYCoord(int yCord) {
+        this.yCoord = yCord;
     }
 
     public boolean isFirstPlayer() {
@@ -72,4 +73,49 @@ public class Piece {
     public Piece(GameBoard board) {
         this.board = board;
     }
+
+    public int[][] gridPlace() {
+        int[][] shape = this.getShape().getShape();
+        int rowSize = shape.length;
+        int columnSize = shape[0].length;
+        int[][] place = new int[rowSize*columnSize][2];
+        int indexRow = 0;
+
+        for(int row = 0; row < rowSize; row++) {
+            for (int col = 0; col < columnSize; col++) {
+                if (shape[row][col] == 0) {
+                    place[indexRow][0] = 0;
+                    place[indexRow][1] = 0;
+                } else {
+                    place[indexRow][0] = this.getRow() + row;
+                    place[indexRow][1] = this.getCol() + col;
+                }
+                indexRow++;
+            }
+        }
+        return place;
+    }
+
+    public int[][] gridPlace(Move move) {
+        int[][] shape = move.getPiece().getShape().getShape();
+        int rowSize = shape.length;
+        int columnSize = shape[0].length;
+        int[][] place = new int[rowSize*columnSize][2];
+        int indexRow = 0;
+
+        for(int row = 0; row < rowSize; row++) {
+            for (int col = 0; col < columnSize; col++) {
+                if (shape[row][col] == 0) {
+                    place[indexRow][0] = 0;
+                    place[indexRow][1] = 0;
+                } else {
+                    place[indexRow][0] = move.getNewRow() + row;
+                    place[indexRow][1] = move.getNewColumn() + col;
+                }
+                indexRow++;
+            }
+        }
+        return place;
+    }
+
 }
