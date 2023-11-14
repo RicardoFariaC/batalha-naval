@@ -15,6 +15,7 @@ public class Input extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        board.requestFocusInWindow();
         int col = e.getX() / board.getTileSize();
         int row = e.getY() / board.getTileSize();
 

@@ -2,6 +2,7 @@ package main;
 
 import game.Input;
 import game.Move;
+import game.RotatePieceInput;
 import pieces.*;
 
 import javax.swing.*;
@@ -15,9 +16,7 @@ public class GameBoard extends JPanel {
     private final int rows = 16;
     private final ArrayList<Piece> pieces = new ArrayList<>();
     private Piece selectedPiece;
-
-    private Input input = new Input(this);
-
+    private boolean isFirstPlayer;
     public Piece getSelectedPiece() {
         return selectedPiece;
     }
@@ -25,7 +24,6 @@ public class GameBoard extends JPanel {
     public void setSelectedPiece(Piece selectedPiece) {
         this.selectedPiece = selectedPiece;
     }
-
 
     public int getTileSize() {
         return tileSize;
@@ -41,29 +39,59 @@ public class GameBoard extends JPanel {
 
     public void setTileSize(int tileSize) {
         this.tileSize = tileSize;
+        this.revalidate();
+        this.repaint();
     }
 
-    public GameBoard(int tileSize) {
+    public boolean isFirstPlayer() {
+        return isFirstPlayer;
+    }
+
+    public void setFirstPlayer(boolean firstPlayer) {
+        isFirstPlayer = firstPlayer;
+    }
+
+    public ArrayList<Piece> getPieces() {
+        return pieces;
+    }
+
+    public GameBoard(int tileSize, boolean isFirstPlayer) {
+        this.isFirstPlayer = isFirstPlayer;
         this.setTileSize(tileSize);
         this.setPreferredSize(new Dimension(cols*tileSize+1, rows*tileSize+1));
-        this.setBackground(Color.BLUE);
+        Input input = new Input(this);
         this.addMouseListener(input);
         this.addMouseMotionListener(input);
+        RotatePieceInput rInput = new RotatePieceInput(this);
+        this.addKeyListener(rInput);
+        this.setFocusable(true);
+        this.setFocusTraversalKeysEnabled(false);
         this.setOpaque(false);
+        this.setVisible(isFirstPlayer);
 
         addPieces();
     }
 
     public Piece getPiece(int col, int row) {
+        int[][] moveGridPlace;
         for (Piece piece : pieces) {
-            if(piece.getCol() == col && piece.getRow() == row) {
-                return piece;
+            int index = 0;
+            moveGridPlace = piece.gridPlace();
+            for (int pieceR = 0; pieceR < piece.getShape().getShape().length; pieceR++) {
+                for (int pieceC = 0; pieceC < piece.getShape().getShape()[0].length; pieceC++) {
+                    if(moveGridPlace[index][1] == col && moveGridPlace[index][0] == row) {
+                        return piece;
+                    }
+                index++;
+                }
             }
+//            if(piece.getCol() == col && piece.getRow() == row) {
+//                return piece;
+//            }
         }
 
         return null;
     }
-
 
     public void addPieces() {
         addCruiser();
@@ -122,10 +150,8 @@ public class GameBoard extends JPanel {
 
     public boolean isValidMove(Move move) {
         if(move.getNewColumn() < 1 || move.getNewRow() < 1) {
-            System.out.println(3);
             return false;
         } else if (move.getNewColumn() > cols - move.getPiece().getShape().getShape()[0].length || move.getNewRow() > rows - move.getPiece().getShape().getShape().length) {
-            System.out.println(2);
             return false;
         }
 
@@ -136,13 +162,13 @@ public class GameBoard extends JPanel {
             int index = 0;
             for(int[] coordinate : piece.gridPlace()) {
                 for(int[] gridPlace : moveGridPlace) {
-                    if(Arrays.equals(coordinate, gridPlace) && !Arrays.equals(gridPlace, zeroArray)) {
-                        System.out.println(1);
+                    if(move.getPiece() != piece && Arrays.equals(coordinate, gridPlace) && !Arrays.equals(gridPlace, zeroArray)) {
                         return false;
                     }
                 }
             }
         }
+
 
         return true;
         // return move.getNewColumn() <= cols - move.getPiece().getShape().getShape()[0].length && move.getNewRow() <= rows - move.getPiece().getShape().getShape().length;
@@ -175,9 +201,10 @@ public class GameBoard extends JPanel {
         for(int i = 0; i < rows; i++) {
             for(int j = 0; j < cols; j++) {
                 g2d.setStroke(new BasicStroke(2));
-                g2d.setBackground(Color.blue);
                 if(i == 0 && j == 0) {
                     g2d.fillRect(1, 1, tileSize, tileSize);
+                    g2d.setColor(Color.white);
+                    g2d.drawString(isFirstPlayer() ? "P1" : "P2", (tileSize/4), (3*tileSize/4));
                     g2d.setColor(Color.BLACK);
                 } else if (i == 0) {
                     g2d.drawString(alphabet[j], (tileSize/4), j*(tileSize)+(3*tileSize/4));

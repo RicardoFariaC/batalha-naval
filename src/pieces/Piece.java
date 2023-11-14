@@ -8,7 +8,7 @@ public class Piece {
     private boolean isFirstPlayer;
     private String pieceName;
     private PieceShape shape;
-    private GameBoard board;
+    private final GameBoard board;
 
     public int getCol() {
         return col;
@@ -66,8 +66,14 @@ public class Piece {
         this.shape = shape;
     }
 
-    public void rotate() {
+    public void rotateInBoard() {
         setShape(shape.rotate());
+    }
+
+    public Piece rotate() {
+        Piece rPiece = new Piece(board);
+        rPiece.setShape(shape.rotate());
+        return rPiece;
     }
 
     public Piece(GameBoard board) {
