@@ -226,6 +226,4 @@ public class GameBoard extends JPanel {
 
         g.dispose();
     }
-
-
 }

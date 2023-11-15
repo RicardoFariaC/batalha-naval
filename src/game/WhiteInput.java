@@ -11,7 +11,16 @@ import java.util.Arrays;
 
 public class WhiteInput implements MouseListener {
     private WhiteGameBoard board;
+    private boolean rightAns;
     private ArrayList<int[][]> gridPlaces;
+
+    public boolean isRightAns() {
+        return rightAns;
+    }
+
+    public void setRightAns(boolean rightAns) {
+        this.rightAns = rightAns;
+    }
 
     public WhiteInput(WhiteGameBoard board) {
         this.board = board;
@@ -23,7 +32,11 @@ public class WhiteInput implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        boolean rightAns = false;
+        if(board.isFired()) {
+            return;
+        }
+
+        this.setRightAns(false);
         int col = e.getY() / board.getTileSize();
         int row = e.getX() / board.getTileSize();
 
@@ -41,12 +54,15 @@ public class WhiteInput implements MouseListener {
                 System.out.println("GROW>" + ints[0]);
                 System.out.println(row==ints[0]);
                 System.out.println(col==ints[1]);
-                if (row == ints[1] && col == ints[0])
-                    rightAns = true;
+                if (row == ints[1] && col == ints[0]) {
+                    this.setRightAns(true);
+                    break;
+                }
             }
         }
 
-        if(rightAns)
+        board.testFire();
+        if(this.isRightAns())
             board.getGraphics().drawImage(board.getImg()[1].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);
         else
             board.getGraphics().drawImage(board.getImg()[0].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);

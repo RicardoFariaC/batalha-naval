@@ -16,7 +16,7 @@ public class WhiteGameBoard extends JPanel {
     private ArrayList<Piece> pieces;
     private ImageIcon[] img;
     private WhiteInput wInput = new WhiteInput(this);
-
+    private boolean fired = false;
 
     public boolean isFirstPlayer() {
         return isFirstPlayer;
@@ -50,6 +50,14 @@ public class WhiteGameBoard extends JPanel {
         this.img = img;
     }
 
+    public boolean isFired() {
+        return fired;
+    }
+
+    public void setFired(boolean fired) {
+        this.fired = fired;
+    }
+
     public void setPieces(ArrayList<Piece> pieces) {
         this.pieces = pieces;
         wInput.setGridPlaces(this.getGridPlaces());
@@ -80,6 +88,9 @@ public class WhiteGameBoard extends JPanel {
         return gridPlaces;
     }
 
+    public void testFire() {
+        setFired(!wInput.isRightAns());
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
