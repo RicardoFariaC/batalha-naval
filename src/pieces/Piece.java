@@ -2,6 +2,11 @@ package pieces;
 
 import game.Move;
 import main.GameBoard;
+import main.WhiteGameBoard;
+import models.FireLocation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Piece {
     private int col, row, xCoord, yCoord;
@@ -124,4 +129,19 @@ public class Piece {
         return place;
     }
 
+    public ArrayList<FireLocation> turnIntoFireLocation(WhiteGameBoard wBoard) {
+        ArrayList<FireLocation> fl = new ArrayList<>();
+        for (int row = 0; row < this.gridPlace().length; row++) {
+            if(!(this.gridPlace()[row][1] == 0) && !(this.gridPlace()[row][0] == 0)) {
+                FireLocation newFl = new FireLocation(wBoard.getImg()[0].getImage(), this.gridPlace()[row][1] * board.getTileSize(), this.gridPlace()[row][0] * board.getTileSize(), board.getTileSize(), board.getTileSize(), true);
+                fl.add(newFl);
+            }
+        }
+        return fl;
+    }
+
+    @Override
+    public String toString() {
+        return this.pieceName + " / " + Arrays.deepToString(this.gridPlace());
+    }
 }

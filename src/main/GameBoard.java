@@ -95,10 +95,10 @@ public class GameBoard extends JPanel {
 
     public void addPieces() {
         addCruiser();
-        addBattleShip();
-        addCarrier();
-        addHidroPlane();
-        addSubmarine();
+//        addBattleShip();
+//        addCarrier();
+//        addHidroPlane();
+//        addSubmarine();
     }
     
     private void addCruiser() {
@@ -223,6 +223,7 @@ public class GameBoard extends JPanel {
         for (Piece piecesPlaced : pieces) {
             drawPiece(g2d, piecesPlaced);
         }
+
 
         g.dispose();
     }

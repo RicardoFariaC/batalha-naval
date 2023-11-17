@@ -1,18 +1,24 @@
 package game;
 
-import main.GameBoard;
+import main.MainFrame;
 import main.WhiteGameBoard;
+import models.FireLocation;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class WhiteInput implements MouseListener {
-    private WhiteGameBoard board;
+    private final WhiteGameBoard board;
     private boolean rightAns;
     private ArrayList<int[][]> gridPlaces;
+    private JFrame frame;
+
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
+    }
 
     public boolean isRightAns() {
         return rightAns;
@@ -22,13 +28,14 @@ public class WhiteInput implements MouseListener {
         this.rightAns = rightAns;
     }
 
+    public void setGridPlaces(ArrayList<int[][]> gridPlaces) {
+        this.gridPlaces = gridPlaces;
+    }
+
     public WhiteInput(WhiteGameBoard board) {
         this.board = board;
     }
 
-    public void setGridPlaces(ArrayList<int[][]> gridPlaces) {
-        this.gridPlaces = gridPlaces;
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -46,14 +53,8 @@ public class WhiteInput implements MouseListener {
 
         board.getGraphics().clearRect(row, col, 0, 0);
 
-        System.out.println("COL>" + col);
-        System.out.println("ROW>" + row);
         for(int[][] gridPlace : gridPlaces) {
             for (int[] ints : gridPlace) {
-                System.out.println("GCOL>" + ints[1]);
-                System.out.println("GROW>" + ints[0]);
-                System.out.println(row==ints[0]);
-                System.out.println(col==ints[1]);
                 if (row == ints[1] && col == ints[0]) {
                     this.setRightAns(true);
                     break;
@@ -62,17 +63,13 @@ public class WhiteInput implements MouseListener {
         }
 
         board.testFire();
-        if(this.isRightAns())
-            board.getGraphics().drawImage(board.getImg()[1].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);
-        else
-            board.getGraphics().drawImage(board.getImg()[0].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);
+        FireLocation fl = new FireLocation(this.isRightAns() ? board.getImg()[1].getImage() : board.getImg()[0].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), this.isRightAns());
+        boolean add = board.addFireLocation(fl);
+        if(add)
+            board.getGraphics().drawImage(fl.getImg(), fl.getX(), fl.getY(), fl.getWidth(), fl.getHeight(), null);
+        if(board.verifyPiece())
+            board.endGame(frame);
 
-
-
-        // Right Ans Image
-//        board.getGraphics().drawImage(board.getImg()[1].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);
-        // Wrong Ans Image
-//        board.getGraphics().drawImage(board.getImg()[0].getImage(), row * board.getTileSize(), col * board.getTileSize(), board.getTileSize(), board.getTileSize(), null);
     }
 
     @Override

@@ -1,11 +1,13 @@
 package main;
 
 import game.WhiteInput;
+import models.FireLocation;
 import pieces.Piece;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class WhiteGameBoard extends JPanel {
     private final boolean isFirstPlayer;
@@ -15,8 +17,10 @@ public class WhiteGameBoard extends JPanel {
     private final int IMAGES = 2;
     private ArrayList<Piece> pieces;
     private ImageIcon[] img;
-    private WhiteInput wInput = new WhiteInput(this);
+    private final WhiteInput wInput = new WhiteInput(this);
     private boolean fired = false;
+    private ArrayList<FireLocation> fireLocations = new ArrayList<FireLocation>();
+    private final ArrayList<FireLocation> finalFireLocations = new ArrayList<>();
 
     public boolean isFirstPlayer() {
         return isFirstPlayer;
@@ -58,17 +62,44 @@ public class WhiteGameBoard extends JPanel {
         this.fired = fired;
     }
 
+    public ArrayList<FireLocation> getFireLocations() {
+        return fireLocations;
+    }
+
+    public boolean addFireLocation(FireLocation fireLocation) {
+        if(fireLocations.stream().noneMatch(
+                fl -> {
+                    boolean a = fl.getX() == fireLocation.getX();
+                    boolean b = fl.getY() == fireLocation.getY();
+                    return a&&b;
+                }
+        )) {
+            this.fireLocations.add(fireLocation);
+            return true;
+        }
+        return false;
+    }
+
+    public void setFireLocations(ArrayList<FireLocation> fireLocations) {
+        this.fireLocations = fireLocations;
+    }
+
     public void setPieces(ArrayList<Piece> pieces) {
         this.pieces = pieces;
         wInput.setGridPlaces(this.getGridPlaces());
+        for (Piece piece: pieces) {
+            finalFireLocations.addAll(piece.turnIntoFireLocation(this));
+        }
     }
 
-    public WhiteGameBoard(int tileSize, boolean isFirstPlayer) {
+    public WhiteGameBoard(int tileSize, boolean isFirstPlayer, JFrame frame) {
         img = new ImageIcon[IMAGES];
         for (int i = 0; i < IMAGES; i++) {
             String path = "src/resources/" + (i+1) + ".png";
             img[i] = new ImageIcon(path);
         }
+
+        this.wInput.setFrame(frame);
         this.isFirstPlayer = isFirstPlayer;
         this.setTileSize(tileSize);
         this.setPreferredSize(new Dimension(cols*tileSize+1, rows*tileSize+1));
@@ -90,6 +121,10 @@ public class WhiteGameBoard extends JPanel {
 
     public void testFire() {
         setFired(!wInput.isRightAns());
+    }
+
+    public boolean verifyPiece() {
+        return fireLocations.containsAll(finalFireLocations);
     }
 
     @Override
@@ -120,7 +155,44 @@ public class WhiteGameBoard extends JPanel {
             }
         }
 
+        if(fireLocations!=null) {
+            for (FireLocation fireLocation : fireLocations) {
+                g2d.drawImage(fireLocation.getImg(), fireLocation.getX(), fireLocation.getY(), fireLocation.getWidth(), fireLocation.getHeight(), null);
+            }
+        }
+
         g.dispose();
     }
 
+    public void endGame(JFrame frame) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 1;
+
+        JButton close = new JButton("Fechar");
+        JDialog dialog = new JDialog(
+                frame, "Fim de jogo"
+        );
+        dialog.setLayout(new GridBagLayout());
+        dialog.add(
+                new JLabel("O jogador " + (isFirstPlayer ? "P2" : "P1") + " venceu!"), gbc
+        );
+
+        gbc.gridy++;
+        dialog.add(
+                close, gbc
+        );
+
+        close.addActionListener(
+                e -> {
+                    frame.dispose();
+                }
+        );
+
+        dialog.setSize(500, 250);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
 }
